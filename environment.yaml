@@ -1,0 +1,27 @@
+name: etl-env
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.9.12
+  - pip
+  - pip:
+      - boto3
+      - psycopg2-binary
+      - docker
+      - pycryptodome
+      - pyyaml
+variables:
+    queueUrl: "https://localhost:4566/000000000000/login-queue"
+    localstackContainer: "sqs-queue-etl-localstack-1"
+    localstackPort: "4566"
+    postgresContainer: "sqs-queue-etl-postgres-1"
+    postgresPort: "5432"
+    postgresHost: "postgres"
+    postgresPassword: {'PGPASSWORD': 'postgres'}
+    aesKeyPath: "./key"
+    receiveMessageCommand: f'awslocal sqs receive-message --queue-url {queue_url}'
+    insertMessageCommand: f"INSERT INTO user_logins (user_id, device_type, masked_ip, masked_device_id, locale, app_version, create_date) VALUES ('{user_id}', '{device_type}', '{masked_ip}', '{masked_device_id}', '{locale}', {app_version}, '{create_date}');"
+    psqlCommand: f"psql -d {postgres_host} -U {postgres_host} -p {postgres_port} -h localhost -c '{insert_message_command}'"
+
+
